@@ -126,7 +126,7 @@ class AdvisorClient(object):
 
   def list_trial_metrics(self, study_name, trial_id):
     url = "{}/suggestion/v1/studies/{}/trials/{}/metrics".format(
-        self.endpoint, study_name)
+        self.endpoint, study_name, trial_id)
     response = requests.get(url)
     trial_metrics = []
 
@@ -139,7 +139,7 @@ class AdvisorClient(object):
     return trial_metrics
 
   def get_best_trial(self, study_name):
-    if not self.is_study_done:
+    if not self.is_study_done(study_name):
       return None
 
     study = self.get_study_by_name(study_name)
@@ -195,7 +195,7 @@ class AdvisorClient(object):
     }
     response = requests.post(url, json=request_data)
 
-    study = None
+    trial_metric = None
     if response.ok:
       trial_metric = TrialMetric.from_dict(response.json()["data"])
 
